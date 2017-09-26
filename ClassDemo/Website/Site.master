@@ -46,13 +46,20 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" runat="server" href="~/">Application name</a>
+                    <a class="navbar-brand" runat="server" href="~/">DMIT2018</a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a runat="server" href="~/">Home</a></li>
+                        <%-- Default menu
+                            to add an item to your menu copy a li line
+                            paste and alter the href and text
+                            --%>
+<%--                        <li><a runat="server" href="~/">Home</a></li>
+                        <li><a runat="server" href="~/SamplePages/FirstLinqSample">First Linq Sample</a></li>
                         <li><a runat="server" href="~/About">About</a></li>
-                        <li><a runat="server" href="~/Contact">Contact</a></li>
+                        <li><a runat="server" href="~/Contact">Contact</a></li>--%>
+
+
                     </ul>
                     <asp:LoginView runat="server" ViewStateMode="Disabled">
                         <AnonymousTemplate>
@@ -70,6 +77,31 @@
                             </ul>
                         </LoggedInTemplate>
                     </asp:LoginView>
+
+                    <%-- It seems that an altered menu does not display as expected if placed before the LoginView.
+                        Placing this asp:Menu control after the LoginView appears to correct the appearance
+                        
+                        This asp:Menu control could be used with the menu items in a web.sitemap file coded as SiteMapNodes. If
+                        done in that fashion (CPSC1517) you need to link the menu control to a SiteMapDataSource control.
+                        
+                        The version of the asp:Menu control here, does NOT use a web.sitemap file and all menu items are coded in site. --%>
+
+                    <asp:Menu ID="navMenu" runat="server" BackColor="000000" BorderColor="Red" 
+                        StaticMenuItemStyle-ForeColor="#999999" 
+                        StaticMenuItemStyle-VerticalPadding="14px" StaticMenuItemStyle-Font-Size="Larger" 
+                         StaticMenuItemStyle-HorizontalPadding="10px"
+                         RenderingMode="List" Orientation="Horizontal" DynamicMenuItemStyle-ForeColor="#999999" DynamicMenuStyle-BackColor="Black" DynamicMenuItemStyle-Font-Size="Larger">
+                        <Items>
+                            <asp:MenuItem Text="Home" NavigateUrl="~/"></asp:MenuItem>
+                            <asp:MenuItem Text="About" NavigateUrl="~/About.aspx"></asp:MenuItem>
+                            <asp:MenuItem Text="Contact" NavigateUrl="~/Contact.aspx"></asp:MenuItem>
+                            <asp:MenuItem Text="Queries">
+                                <asp:MenuItem Text="First Linq Sample" NavigateUrl="~/SamplePages/FirstLinqSample.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Albums By Year Release" NavigateUrl="~/SamplePages/AlbumsByYearRelease.aspx"></asp:MenuItem>
+                            </asp:MenuItem>
+                        </Items>
+                    </asp:Menu>
+
                 </div>
             </div>
         </div>
