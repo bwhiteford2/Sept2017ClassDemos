@@ -98,6 +98,7 @@
                             <asp:MenuItem Text="Queries">
                                 <asp:MenuItem Text="First Linq Sample" NavigateUrl="~/SamplePages/FirstLinqSample.aspx"></asp:MenuItem>
                                 <asp:MenuItem Text="Albums By Year Release" NavigateUrl="~/SamplePages/AlbumsByYearRelease.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Genre Album Tracks" NavigateUrl="~/SamplePages/GenreAlbumTracks.aspx"></asp:MenuItem>
                             </asp:MenuItem>
                         </Items>
                     </asp:Menu>
