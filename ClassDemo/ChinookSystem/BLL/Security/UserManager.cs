@@ -1,17 +1,25 @@
-﻿using Chinook.Data.Entities.Security;
+﻿
+using System;
+using System.Collections.Generic;
+
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+#region Additional Namespaces
+using Chinook.Data.Entities;
+using Chinook.Data.Entities.Security;
 using Chinook.Data.POCOs;
 using ChinookSystem.DAL;
 using ChinookSystem.DAL.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+#endregion
 
 namespace ChinookSystem.BLL.Security
 {
+    [DataObject]
     public class UserManager : UserManager<ApplicationUser>
     {
         #region Constants
@@ -155,6 +163,101 @@ namespace ChinookSystem.BLL.Security
             //return teh finalized new verified user name
             return verifiedUserName;
         }
+        #region UserRole Adminstration
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<UserProfile> ListAllUsers()
+        {
+            var rm = new RoleManager();
+            List<UserProfile> results = new List<UserProfile>();
+            var tempresults = from person in Users.ToList()
+                              select new UserProfile
+                              {
+                                  UserId = person.Id,
+                                  UserName = person.UserName,
+                                  Email = person.Email,
+                                  EmailConfirmation = person.EmailConfirmed,
+                                  EmployeeId = person.EmployeeID,
+                                  CustomerId = person.CustomerID,
+                                  RoleMemberships = person.Roles.Select(r => rm.FindById(r.RoleId).Name)
+                              };
+            //get any user first and last names
+            using (var context = new ChinookContext())
+            {
+                Employee tempEmployee;
+                foreach (var person in tempresults)
+                {
+                    if (person.EmployeeId.HasValue)
+                    {
+                        tempEmployee = context.Employees.Find(person.EmployeeId);
+                        if (tempEmployee != null)
+                        {
+                            person.FirstName = tempEmployee.FirstName;
+                            person.LastName = tempEmployee.LastName;
+                        }
+                    }
+                    results.Add(person);
+                }
+            }
+            return results.ToList();
+        }
 
+        [DataObjectMethod(DataObjectMethodType.Insert, false)]
+        public void AddUser(UserProfile userinfo)
+        {
+            if (string.IsNullOrEmpty(userinfo.EmployeeId.ToString()))
+            {
+                throw new Exception("Employee ID is missing. Remember Employee must be on file to get an user account.");
+
+            }
+            else
+            {
+                EmployeeController sysmgr = new EmployeeController();
+                Employee existing = sysmgr.Employee_Get(int.Parse(userinfo.EmployeeId.ToString()));
+                if (existing == null)
+                {
+                    throw new Exception("Employee must be on file to get an user account.");
+                }
+                else
+                {
+                    var userAccount = new ApplicationUser()
+                    {
+                        EmployeeID = userinfo.EmployeeId,
+                        CustomerID = userinfo.CustomerId,
+                        UserName = userinfo.UserName,
+                        Email = userinfo.Email
+                    };
+                    IdentityResult result = this.Create(userAccount,
+                        string.IsNullOrEmpty(userinfo.RequestedPassord) ? STR_DEFAULT_PASSWORD
+                        : userinfo.RequestedPassord);
+                    if (!result.Succeeded)
+                    {
+                        //name was already in use
+                        //get a UserName that is not already on the Users Table
+                        //the method will suggest an alternate UserName
+                        userAccount.UserName = VerifyNewUserName(userinfo.UserName);
+                        this.Create(userAccount, STR_DEFAULT_PASSWORD);
+                    }
+                    foreach (var roleName in userinfo.RoleMemberships)
+                    {
+                        //this.AddToRole(userAccount.Id, roleName);
+                        AddUserToRole(userAccount, roleName);
+                    }
+                }
+            }
+        }
+
+        public void AddUserToRole(ApplicationUser userAccount, string roleName)
+        {
+            this.AddToRole(userAccount.Id, roleName);
+        }
+
+
+        public void RemoveUser(UserProfile userinfo)
+        {
+            this.Delete(this.FindById(userinfo.UserId));
+        }
+        #endregion
     }
+
+
 }
