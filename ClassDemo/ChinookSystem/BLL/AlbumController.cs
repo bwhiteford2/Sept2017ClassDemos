@@ -75,7 +75,7 @@ namespace ChinookSystem.BLL
                 return context.Albums.Find(albumid);
             }
         }
-        [DataObjectMethod(DataObjectMethodType.Insert,false)]
+        [DataObjectMethod(DataObjectMethodType.Insert, false)]
         public int Albums_Add(Album item)
         {
             using (var context = new ChinookContext())
@@ -85,7 +85,7 @@ namespace ChinookSystem.BLL
                 return item.AlbumId;
             }
         }
-        [DataObjectMethod(DataObjectMethodType.Update,false)]
+        [DataObjectMethod(DataObjectMethodType.Update, false)]
         public int Albums_Update(Album item)
         {
             using (var context = new ChinookContext())
@@ -106,11 +106,29 @@ namespace ChinookSystem.BLL
 
             }
         }
-        
-        [DataObjectMethod(DataObjectMethodType.Delete,false)]
+
+        [DataObjectMethod(DataObjectMethodType.Delete, false)]
         public int Albums_Delete(Album item)
         {
             return Albums_Delete(item.AlbumId);
+        }
+
+
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<SelectionList> List_AlbumTitles()
+        {
+            using (var context = new ChinookContext())
+            {
+                var results = from x in context.Albums
+                              orderby x.Title
+                              select new SelectionList
+                              {
+                                  IDValueField = x.AlbumId,
+                                  DisplayText = x.Title
+                              };
+                return results.ToList();
+            }
+
         }
     }
 }

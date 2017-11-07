@@ -45,5 +45,20 @@ namespace ChinookSystem.BLL
                 return results.ToList();
             }
         }
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<SelectionList> List_GenreNames()
+        {
+            using (var context = new ChinookContext())
+            {
+                var results = from x in context.Genres
+                              orderby x.Name
+                              select new SelectionList
+                              {
+                                  IDValueField = x.GenreId,
+                                  DisplayText = x.Name
+                              };
+                return results.ToList();
+            }
+        }
     }
 }
