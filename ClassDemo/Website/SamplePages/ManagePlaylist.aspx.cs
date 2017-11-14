@@ -104,7 +104,7 @@ public partial class SamplePages_ManagePlaylist : System.Web.UI.Page
                 List<UserPlaylistTrack> info = sysmgr.List_TracksForPlaylist(PlaylistName.Text, username);
                 PlayList.DataSource = info;
                 PlayList.DataBind();
-            },"","Here is your playlist");
+            }, "", "Here is your playlist");
 
         }
     }
@@ -112,7 +112,30 @@ public partial class SamplePages_ManagePlaylist : System.Web.UI.Page
     protected void TracksSelectionList_ItemCommand(object sender,
         ListViewCommandEventArgs e)
     {
-        //code to go here
+        if (string.IsNullOrEmpty(PlaylistName.Text))
+        {
+            MessageUserControl.ShowInfo("Warning", "Playlist Name is Required");
+        }
+        else
+        {
+            string username = User.Identity.Name;
+            // Where does TrackId come from
+            // ListViewCommandEventArgs e contains the parameter values for this event
+            // CommandArgument is included in e which is an object
+            int trackid = int.Parse(e.CommandArgument.ToString());
+
+            // send your collection of patameter value to the BLL for processing
+            MessageUserControl.TryRun(() =>
+            {
+                // the process
+                PlaylistTracksController sysmgr = new PlaylistTracksController();
+                List<UserPlaylistTrack> refreshResults = sysmgr.Add_TrackToPlaylist(PlaylistName.Text, username, trackid);
+                PlayList.DataSource = refreshResults;
+                PlayList.DataBind();
+
+            },"Success", "Your Track has been added to your playlist");
+        }
+
     }
 
     protected void MoveUp_Click(object sender, EventArgs e)
