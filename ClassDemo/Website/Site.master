@@ -101,6 +101,7 @@
                                 <asp:MenuItem Text="Genre Album Tracks" NavigateUrl="~/SamplePages/GenreAlbumTracks.aspx"></asp:MenuItem>
                                 <asp:MenuItem Text="CRUD" NavigateUrl="~/SamplePages/TabbedCRUDReview.aspx"></asp:MenuItem>
                                 <asp:MenuItem Text="UX" NavigateUrl="~/SamplePages/ManagePlaylist.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Report" NavigateUrl="~/SamplePages/GenreAlbumReport.aspx"></asp:MenuItem>
                             </asp:MenuItem>
                             <asp:MenuItem Text="Security" NavigateUrl="~/Admin/Security/UserRoleAdmin.aspx"></asp:MenuItem>
                         </Items>
