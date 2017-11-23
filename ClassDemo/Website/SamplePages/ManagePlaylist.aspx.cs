@@ -268,5 +268,48 @@ public partial class SamplePages_ManagePlaylist : System.Web.UI.Page
     protected void DeleteTrack_Click(object sender, EventArgs e)
     {
         //code to go here
+        if (PlayList.Rows.Count == 0)
+        {
+            MessageUserControl.ShowInfo("Information", "You need to retrieve a playlist before deleting");
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(PlaylistName.Text))
+            {
+                MessageUserControl.ShowInfo("Information", "You need to supply the playlist name");
+            }
+            else
+            {
+                // collect the tracks to delete
+                List<int> trackstodelete = new List<int>();
+                int selectedrows = 0;
+                CheckBox theBox = null;
+                for (int i = 0; i < PlayList.Rows.Count; i++)
+                {
+                    theBox = PlayList.Rows[i].FindControl("Selected") as CheckBox;
+                    if (theBox.Checked)
+                    {
+                        trackstodelete.Add(int.Parse((PlayList.Rows[i].FindControl("TrackId") as Label).Text));
+                        selectedrows++;
+                    }
+                }
+                if (selectedrows == 0)
+                {
+                    MessageUserControl.ShowInfo("Information", "You need to select one or more tracks to remove.");
+                }
+                else
+                {
+                    MessageUserControl.TryRun(() =>
+                    {
+                        // at this point you have your data for BLL processing
+                        PlaylistTracksController sysmgr = new PlaylistTracksController();
+                        sysmgr.DeleteTracks(User.Identity.Name, PlaylistName.Text, trackstodelete);
+                        List<UserPlaylistTrack> info = sysmgr.List_TracksForPlaylist(PlaylistName.Text, User.Identity.Name);
+                        PlayList.DataSource = info;
+                        PlayList.DataBind();
+                    },"Success","TracksRemoved");                    
+                }
+            }
+        }
     }
 }
